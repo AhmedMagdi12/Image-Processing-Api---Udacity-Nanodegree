@@ -4,11 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = __importDefault(require("express"));
-var app = (0, express_1.default)();
-var port = 3000;
-app.get('/', function (req, res) {
-    res.send('<h1> Server is Listening </h1>');
-});
-app.listen(port, function () {
-    console.log('hello');
-});
+var process_1 = require("../../services/process");
+var router = express_1.default.Router();
+router.get('/', process_1.process);
+exports.default = router;

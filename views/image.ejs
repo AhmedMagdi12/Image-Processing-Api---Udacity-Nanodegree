@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image API</title>
+    <style>
+        form {
+            display: inline-block;
+            margin: auto;
+            text-align: center;
+            align:center;
+            padding: 2em;
+        }
+    </style>
+</head>
+<body>
+    <form action="/images" method="post" class="img">
+        <label for="img">Select image:</label>
+        <input type="file" id="img" name="img" accept="image/jpg">
+        <label for="img">width:</label>
+        <input name="width">
+        <label for="img">height:</label>
+        <input name="height">
+        <input type="submit">
+      </form>
+</body>
+</html>
