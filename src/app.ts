@@ -6,7 +6,7 @@ const port = 3000;
 
 app.use('/api', routes);
 
-app.get('/', (req, res) : void=> {
+app.get('/', (req:express.Request, res:express.Response) : void=> {
   res.send('connected');
 });
 
