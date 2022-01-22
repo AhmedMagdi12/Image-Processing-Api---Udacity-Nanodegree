@@ -39,49 +39,61 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.process = exports.validate_width_height = void 0;
-var sharp_1 = __importDefault(require("sharp"));
-var path_1 = __importDefault(require("path"));
-var process_ = function (srcPath, destPath, width, height) { return __awaiter(void 0, void 0, void 0, function () {
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, (0, sharp_1.default)(srcPath).withMetadata().resize(width, height).toFile(destPath)];
-            case 1:
-                _a.sent();
-                return [2 /*return*/];
-        }
+var process_1 = require("../../services/process");
+var supertest_1 = __importDefault(require("supertest"));
+var app_1 = __importDefault(require("../app"));
+// validate_width_height
+describe('test width and height', function () {
+    it('return false if width or height rejected, must written and be smaller than 1', function () {
+        expect((0, process_1.validate_width_height)(100, -300)).toBe(false);
     });
-}); };
-function validate_width_height(width, height) {
-    if (height < 1 || width < 1 || !width || !height) {
-        return false;
-    }
-    return true;
-}
-exports.validate_width_height = validate_width_height;
-var process = function (req, res) {
-    try {
-        var imgName = req.query.filename;
-        var height = Number(req.query.height);
-        var width = Number(req.query.width);
-        console.log(imgName, width, height);
-        if (!validate_width_height(width, height)) {
-            throw new Error('width or height must written and be greater than 0');
-        }
-        var srcPath = path_1.default.join(__dirname, '../../assets/full/' + imgName + '.jpg');
-        var destPath_1 = path_1.default.join(__dirname, '../../assets/thumb/' + imgName + '.jpg');
-        process_(srcPath, destPath_1, width, height)
-            .then(function () {
-            res.status(200).sendFile(destPath_1);
-        })
-            .catch(function (e) {
-            console.log(e);
-            res.status(404).send('Image you requested doesn\'t exist');
+    it('return true if width or height must written acceppted, are be greater than 1', function () {
+        expect((0, process_1.validate_width_height)(100, 300)).toBe(true);
+    });
+});
+// test endpoint
+var request = (0, supertest_1.default)(app_1.default);
+describe('Test endpoint responses', function () {
+    it('gets the api endpoint', function () { return __awaiter(void 0, void 0, void 0, function () {
+        var url, response;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    url = '/api/images/?filename=palmtunnel&width=300&height=300';
+                    return [4 /*yield*/, request.get(url)];
+                case 1:
+                    response = _a.sent();
+                    expect(response.status).toBe(200);
+                    return [2 /*return*/];
+            }
         });
-    }
-    catch (err) {
-        console.log('invalid Input');
-        res.status(400).send("<h4>There is an input error Please Enter query parameters like this format =><h2> ?filename={image}&width={width > 0  }&height={height > 0}</h2></h4>");
-    }
-};
-exports.process = process;
+    }); });
+    it('throw an error with 404 status code if image not found', function () { return __awaiter(void 0, void 0, void 0, function () {
+        var url, response;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    url = '/api/images/?filename=hhhhhhhhhh&width=300&height=300';
+                    return [4 /*yield*/, request.get(url)];
+                case 1:
+                    response = _a.sent();
+                    expect(response.status).toBe(404);
+                    return [2 /*return*/];
+            }
+        });
+    }); });
+    it('throw an error with 400 status code if bad input or width or height incorrect', function () { return __awaiter(void 0, void 0, void 0, function () {
+        var url, response;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    url = '/api/images/?filename=palmtunnel&width=-200&height=0';
+                    return [4 /*yield*/, request.get(url)];
+                case 1:
+                    response = _a.sent();
+                    expect(response.status).toBe(400);
+                    return [2 /*return*/];
+            }
+        });
+    }); });
+});

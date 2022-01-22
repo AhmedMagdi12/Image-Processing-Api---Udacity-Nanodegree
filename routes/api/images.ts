@@ -4,7 +4,6 @@ import { process } from '../../services/process';
 
 const router = express.Router();
 
-router.get('/',  process);
+router.get('/', process);
 
 export default router;
-
