@@ -1,6 +1,7 @@
-import {  validate_width_height } from '../../services/process';
+import {  validate_width_height, process_ } from '../services/process';
 import supertest from 'supertest';
 import app from '../app';
+import path from 'path';
 
 
 // validate_width_height
@@ -15,10 +16,21 @@ describe('test width and height', () => {
     });
 });    
 
+
+// test process_ function
+describe('test process_',  () => {
+    const srcPath = path.join(__dirname, '../../assets/full/' + 'palmtunnel' + '.jpg');
+    const destPath = path.join(__dirname,'../../assets/thumb/' + 'palmtunnel' + 200 + 200 +'.jpg');
+    it('it should pass correctly if path is incorrect',  () => {    
+        expect(async () =>  await process_(srcPath,destPath,200,200)).not.toThrowError();
+    });
+});    
+
+
 // test endpoint
 const request = supertest(app);
 describe('Test endpoint responses', () => {
-    it('gets the api endpoint', async () => {
+    it('test the api endpoint', async () => {
         const url = '/api/images/?filename=palmtunnel&width=300&height=300'
         const response = await request.get(url);
         expect(response.status).toBe(200);

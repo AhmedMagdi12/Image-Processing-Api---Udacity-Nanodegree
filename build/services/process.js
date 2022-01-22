@@ -39,19 +39,35 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.process = exports.validate_width_height = void 0;
+exports.process = exports.validate_width_height = exports.process_ = void 0;
 var sharp_1 = __importDefault(require("sharp"));
 var path_1 = __importDefault(require("path"));
+var fs_1 = __importDefault(require("fs"));
 var process_ = function (srcPath, destPath, width, height) { return __awaiter(void 0, void 0, void 0, function () {
+    var err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, (0, sharp_1.default)(srcPath).withMetadata().resize(width, height).toFile(destPath)];
+            case 0:
+                // Caching code
+                if (fs_1.default.existsSync(destPath)) {
+                    //file exists
+                    return [2 /*return*/];
+                }
+                _a.label = 1;
             case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, (0, sharp_1.default)(srcPath).withMetadata().resize(width, height).toFile(destPath)];
+            case 2:
                 _a.sent();
-                return [2 /*return*/];
+                return [3 /*break*/, 4];
+            case 3:
+                err_1 = _a.sent();
+                throw new Error('failed');
+            case 4: return [2 /*return*/];
         }
     });
 }); };
+exports.process_ = process_;
 function validate_width_height(width, height) {
     if (height < 1 || width < 1 || !width || !height) {
         return false;
@@ -64,23 +80,22 @@ var process = function (req, res) {
         var imgName = req.query.filename;
         var height = Number(req.query.height);
         var width = Number(req.query.width);
-        console.log(imgName, width, height);
         if (!validate_width_height(width, height)) {
             throw new Error('width or height must written and be greater than 0');
         }
         var srcPath = path_1.default.join(__dirname, '../../assets/full/' + imgName + '.jpg');
-        var destPath_1 = path_1.default.join(__dirname, '../../assets/thumb/' + imgName + '.jpg');
-        process_(srcPath, destPath_1, width, height)
+        var destPath_1 = path_1.default.join(__dirname, '../../assets/thumb/' + imgName + width + height + '.jpg');
+        (0, exports.process_)(srcPath, destPath_1, width, height)
             .then(function () {
             res.status(200).sendFile(destPath_1);
         })
             .catch(function (e) {
-            console.log(e);
-            res.status(404).send('Image you requested doesn\'t exist');
+            // console.log(e);
+            res.status(404).send(e.message);
         });
     }
     catch (err) {
-        console.log('invalid Input');
+        // console.log('invalid Input');
         res.status(400).send("<h4>There is an input error Please Enter query parameters like this format =><h2> ?filename={image}&width={width > 0  }&height={height > 0}</h2></h4>");
     }
 };

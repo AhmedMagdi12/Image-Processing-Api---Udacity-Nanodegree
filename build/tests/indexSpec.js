@@ -39,9 +39,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var process_1 = require("../../services/process");
+var process_1 = require("../services/process");
 var supertest_1 = __importDefault(require("supertest"));
 var app_1 = __importDefault(require("../app"));
+var path_1 = __importDefault(require("path"));
 // validate_width_height
 describe('test width and height', function () {
     it('return false if width or height rejected, must written and be smaller than 1', function () {
@@ -51,10 +52,23 @@ describe('test width and height', function () {
         expect((0, process_1.validate_width_height)(100, 300)).toBe(true);
     });
 });
+// test process_ function
+describe('test process_', function () {
+    var srcPath = path_1.default.join(__dirname, '../../assets/full/' + 'palmtunnel' + '.jpg');
+    var destPath = path_1.default.join(__dirname, '../../assets/thumb/' + 'palmtunnel' + 200 + 200 + '.jpg');
+    it('it should pass correctly if path is incorrect', function () {
+        expect(function () { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, (0, process_1.process_)(srcPath, destPath, 200, 200)];
+                case 1: return [2 /*return*/, _a.sent()];
+            }
+        }); }); }).not.toThrowError();
+    });
+});
 // test endpoint
 var request = (0, supertest_1.default)(app_1.default);
 describe('Test endpoint responses', function () {
-    it('gets the api endpoint', function () { return __awaiter(void 0, void 0, void 0, function () {
+    it('test the api endpoint', function () { return __awaiter(void 0, void 0, void 0, function () {
         var url, response;
         return __generator(this, function (_a) {
             switch (_a.label) {
